@@ -2,9 +2,10 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { colorSchemes, type AspectRatio, type IThumbnail } from "../assets/assets";
 import SoftBackdrop from "../components/SoftBackdrop";
-import { button } from "motion/react-client";
 import AspectRatioSelector from "../components/AspectRatioSelector";
 import StyleSelector from "../components/StyleSelector";
+import ColorSchemeSelector from "../components/ColorSchemeSelector";
+import type { ThumbnailStyle } from "../assets/assets";
 
 const Generate = () => {
     const {id} = useParams();
@@ -14,7 +15,7 @@ const Generate = () => {
     const [loading, setLoading] = useState(false)
     
     const [aspectRatio, setAspectRatio] = useState<AspectRatio>('16:9')
-    const [colorSchemeId, setColorSchemeId] = useState<String>(colorSchemes[0].id)
+    const [colorSchemeId, setColorSchemeId] = useState<string>(colorSchemes[0].id)
     const [style, setStyle] = useState<ThumbnailStyle>('Bold & Graphic')
     
     const [styleDropdownOpen, setStyleDropdownOpen] = useState(false)
@@ -46,6 +47,7 @@ const Generate = () => {
                         {/* StyleSelector */}
                         <StyleSelector value={style} onChange={setStyle} isOpen={styleDropdownOpen} setIsOpen={setStyleDropdownOpen}/>
                         {/* ColorSchemeSelector */}
+                        <ColorSchemeSelector value={colorSchemeId} onChange={setColorSchemeId}/>
                         {/* Details */}
                         <div className="space-y-2">
                             <label className="block text-sm font-medium">
