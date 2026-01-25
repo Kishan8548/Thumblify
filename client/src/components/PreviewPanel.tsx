@@ -9,7 +9,11 @@ const PreviewPanel = ({thumbnail, isLoading, aspectRatio}: {thumbnail: IThumbnai
     } as Record<AspectRatio, string>;
     const onDownload = ()=>{
         if(!thumbnail?.image_url) return
-        window.open(thumbnail.image_url, '_blank')
+        const link = document.createElement('a');
+        link.href = thumbnail?.image_url.replace('/upload','/upload/fl_attachment') 
+        document.body.appendChild(link);
+        link.click()
+        link.remove()
     }
     return (
     
@@ -18,9 +22,9 @@ const PreviewPanel = ({thumbnail, isLoading, aspectRatio}: {thumbnail: IThumbnai
         {/* Loading State */}
         {isLoading && (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-black/25">
-                <Loader2Icon className="size-8 animate-spi n text-zinc-400"/>
+                <Loader2Icon className="size-8 animate-spin text-zinc-400"/>
                 <div className="text-center">
-                    <p className="text-sm font-medium text-zinc-200">AI is creating a your thumbnail...</p>
+                    <p className="text-sm font-medium text-zinc-200">AI is creating your thumbnail...</p>
                     <p className="mt-1 text-xs text-zinc-400">This may take 10-20 seconds</p>
                 </div>
             </div>
