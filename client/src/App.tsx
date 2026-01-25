@@ -7,9 +7,9 @@ import LenisScroll from "./components/LenisScroll";
 import Generate from "./pages/Generate";
 import MyGeneration from "./pages/MyGeneration";
 import YtPreview from "./pages/YtPreview";
-import { LogIn } from "lucide-react";
 import Login from "./components/Login";
 import { useEffect } from "react";
+import {Toaster} from 'react-hot-toast'
 
 export default function App() {
     const {pathname} = useLocation()
@@ -18,6 +18,7 @@ export default function App() {
     },[pathname])
     return (
         <>
+            <Toaster/>
             <LenisScroll />
             <Navbar />
             <Routes>
