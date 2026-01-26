@@ -5,7 +5,7 @@ import protect from '../middlewares/auth.js';
 const ThumbnailRouter = express.Router();
 
 ThumbnailRouter.post('/generate',protect, generateThumbnail)
-ThumbnailRouter.delete('/generate/:id',protect, deleteThumbnail)
+ThumbnailRouter.delete('/delete/:id',protect, deleteThumbnail)
 
 export default ThumbnailRouter; 
 

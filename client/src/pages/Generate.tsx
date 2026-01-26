@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { colorSchemes, dummyThumbnails, type AspectRatio, type IThumbnail } from "../assets/assets";
+import { colorSchemes, type AspectRatio, type IThumbnail } from "../assets/assets";
 import SoftBackdrop from "../components/SoftBackdrop";
 import AspectRatioSelector from "../components/AspectRatioSelector";
 import StyleSelector from "../components/StyleSelector";
@@ -9,7 +9,6 @@ import type { ThumbnailStyle } from "../assets/assets";
 import PreviewPanel from "../components/PreviewPanel";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
-import { color } from "motion";
 import api from "../configs/api";
 
 const Generate = () => {
