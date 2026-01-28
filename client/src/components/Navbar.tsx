@@ -3,7 +3,6 @@ import { useState } from "react";
 import { motion } from "motion/react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { div } from "motion/react-client";
 
 export default function Navbar() {
     const {isLoggedIn, user, logout} = useAuth()
@@ -31,7 +30,7 @@ export default function Navbar() {
 
 
                     }
-                    <Link to='#' className="hover:text-pink-500 transition">Contact us</Link>
+                    <a href='#contact' className="hover:text-pink-500 transition">Contact us</a>
                 </div>
                 <div className="flex items-center gap-2">
                     {isLoggedIn ? (

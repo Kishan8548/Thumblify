@@ -29,7 +29,7 @@ const Login = () => {
         else{
             signUp(formData)
         }
-    }
+    }   
 
     useEffect(()=>{
         if(user){
