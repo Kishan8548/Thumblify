@@ -31,26 +31,42 @@ const Generate = () => {
     const [styleDropdownOpen, setStyleDropdownOpen] = useState(false)
 
     const handleGenerate = async () => {
-        if(!isLoggedIn) return toast.error('Please login to generate the thumbnails')
-          if(!title.trim()) return toast.error('Title is required')
-            setLoading(true)
+      if (!isLoggedIn) return toast.error('Please login to generate the thumbnails');
+      if (!title.trim()) return toast.error('Title is required');
 
-        const api_payload = {
-          title,
-          prompt: additionDetails,
-          style,
-          aspectRatio: aspectRatio,
-          color_scheme: colorSchemeId,
-          text_overlay: true,
-        }
-        
-        const {data} = await api.post('/api/thumbnail/generate', api_payload)
-        if(data.thumbnail){
-          navigate('/generate/'+ data.thumbnail._id)
-          toast.success(data.message)
-        }
-    }
+      setLoading(true);
+
+      const api_payload = {
+        title,
+        prompt: additionDetails,
+        style,
+        aspectRatio: aspectRatio,
+        color_scheme: colorSchemeId,
+        text_overlay: true,
+      };
     
+      try {
+        const { data } = await api.post('/api/thumbnail/generate', api_payload);
+      
+        if (data.thumbnail) {
+          navigate('/generate/' + data.thumbnail._id);
+          toast.success(data.message);
+        }
+      } catch (error: any) {
+        // VERY IMPORTANT
+        setLoading(false);
+      
+        if (error.response?.status === 403) {
+          toast.error('Free limit reached. Upgrade to generate more thumbnails.');
+          return;
+        }
+      
+        toast.error(
+          error?.response?.data?.message || 'Something went wrong'
+        );
+      }
+    };
+
     const fetchThumbnail = async () => {
       try {
         const { data } = await api.get(`/api/user/thumbnail/${id}`);
@@ -127,9 +143,13 @@ const Generate = () => {
                         </div>
                         {/* BUTTON */ }
                         {!id && (
-                            <button onClick={handleGenerate} className="text-[15px] w-full py-3.5 rounded-xl font-medium bg-linear-to-b from-pink-500 to-pink-600 hover:from-pink-700 disabled:cursor-not-allowed transition-colors">
-                                {loading ? 'Generating...': 'Generate Thumbnail '}
-                            </button>
+                          <button
+                            onClick={handleGenerate}
+                            disabled={loading}
+                            className="text-[15px] w-full py-3.5 rounded-xl font-medium bg-linear-to-b from-pink-500 to-pink-600 hover:from-pink-700 disabled:cursor-not-allowed transition-colors"
+                          >
+                            {loading ? 'Generating...' : 'Generate Thumbnail'}
+                          </button>
                         )}
                     </div>
                 </div>

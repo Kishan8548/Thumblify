@@ -5,6 +5,8 @@ import ai from '../configs/ai.js';
 import path from 'node:path';
 import fs from 'fs';
 import {v2 as cloudinary} from 'cloudinary'
+import User from '../models/User.js';
+
 
 const stylePrompts = {
   'Bold & Graphic':
@@ -52,8 +54,27 @@ const colorSchemeDescriptions = {
 
 export const generateThumbnail = async (req: Request, res: Response) => {
     try {
-        const {userId} = req.session;
-        const { title, prompt: user_prompt, style, aspect_ratio, color_scheme, text_overlay} = req.body;
+        const { userId } = req.session;
+
+        // auth check
+        if (!userId) {
+            return res.status(401).json({ message: "Login required" });
+        }
+
+        // fetch user & check free limit
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // free limit: only 1 thumbnail
+        if (!user.isPremium && user.freeGenerationsUsed >= 1) {
+            return res.status(403).json({
+                message: "Free limit reached. Upgrade to generate more thumbnails",
+            });
+        }
+
+        const { title, prompt: user_prompt, style, aspect_ratio, color_scheme, text_overlay } = req.body;
 
         const thumbnail = await Thumbnail.create({
             userId,
@@ -74,7 +95,7 @@ export const generateThumbnail = async (req: Request, res: Response) => {
             topP: 0.95,
             responseModalities: ['IMAGE'],
             imageConfig: {
-                aspectRatio: aspect_ratio ||  '16:9',
+                aspectRatio: aspect_ratio || '16:9',
                 imageSize: '1K'
             },
             safetySettings: [
@@ -96,6 +117,7 @@ export const generateThumbnail = async (req: Request, res: Response) => {
               }
             ]  
         }
+
         let prompt = `Create a ${stylePrompts[style as keyof typeof stylePrompts]} for: "${title}"`
 
         if (color_scheme) {
@@ -148,6 +170,12 @@ export const generateThumbnail = async (req: Request, res: Response) => {
         thumbnail.isGenerating = false;
         await thumbnail.save()
 
+        // 🔢 increment free usage AFTER successful generation
+        if (!user.isPremium) {
+            user.freeGenerationsUsed += 1;
+            await user.save();
+        }
+
         res.json({message: 'Thumbnail Generated', thumbnail})
 
         //remove image from the disk
@@ -158,6 +186,7 @@ export const generateThumbnail = async (req: Request, res: Response) => {
         res.status(500).json({message: error.message})
     }
 }
+
 
 
 export const deleteThumbnail = async (req: Request, res: Response) => {
